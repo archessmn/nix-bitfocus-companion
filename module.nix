@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   options.programs.companion = {
     package = lib.mkOption {
       type = lib.types.package;
@@ -31,14 +32,15 @@
     };
   };
   cfg = config.programs.companion;
-in {
+in
+{
   inherit options;
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = lib.mkIf (!cfg.runAsService) [cfg.package];
+    environment.systemPackages = lib.mkIf (!cfg.runAsService) [ cfg.package ];
     systemd.services.companion = lib.mkIf cfg.runAsService {
       description = "Bitfocus Companion";
-      wantedBy = lib.mkIf cfg.autoStart ["multi-user.target"];
-      after = ["network.target"];
+      wantedBy = lib.mkIf cfg.autoStart [ "multi-user.target" ];
+      after = [ "network.target" ];
       serviceConfig = {
         Type = "simple";
         User = cfg.user;
@@ -52,7 +54,7 @@ in {
       };
     };
     networking.firewall = lib.mkIf (cfg.runAsService && cfg.openFirewall) {
-      allowedTCPPorts = [8000];
+      allowedTCPPorts = [ 8000 ];
     };
   };
 }
